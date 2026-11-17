@@ -79,6 +79,21 @@ File dùng chung, mỗi người **chỉ sửa phần của mình**: dòng của
 
 Mô tả ba shape nhóm viết (workflow, single, orchestrator): mỗi shape đọc gì, quyết định gì, gọi host ra sao. Chỉ rõ ranh giới code / model (tham khảo [docs/architecture.md](../../docs/architecture.md)), cách handoff được sanitize và trace ghi những event nào.
 
+### 3.1 Shape A `workflow` (TV1)
+
+- **Đọc:** `get_claim_view` (không `SELECT *`), rồi `lookup_order` theo `principal_id` của claim (chỉ trả field allowlist: `order_id`, `status`, `delay_days`, `shipping_fee_vnd`, `paid_vnd`, `damage_verified`, `carrier`).
+- **Quyết định (toàn bộ bằng code):** thiếu `order_id` → `needs_info`; order không thấy hoặc ngoài phạm vi khách → `escalated`; quote bằng `compute_compensation` từ order row và policy hiện hành; quote 0 → `denied` (không gọi host, nên không có audit `policy_denied`); quote > 0 → `durability.issue_refund(conn, claim_id, quote đầy đủ, crash_at=crash_at)`. Host từ chối → `denied`; xung đột số tiền → `failed`; thành công → `resolved`.
+- **Ranh giới code / model:** ticket không bao giờ được parse lấy số; MockLLM chỉ được gọi **một lần** để soạn câu trả lời, sau khi số tiền đã chốt. Câu "ignore policy" trong ticket không có tác dụng (test `test_ticket_text_cannot_change_amount`).
+- **Crash:** `InjectedCrash` không bị bắt lại; trace được ghi ra rồi ném tiếp để chạy lại (resume) vẫn chỉ ra một refund.
+- **Trace:** event `claim` (claim_id, `has_order_id`), `lookup_order` (order view đã allowlist hoặc lý do không thấy), `quote`, `issue_refund` (ok/conflict/reason), `crash`, `decision`. Cố ý **không** ghi: claim row, `principal_id`, ticket, `parent_secret`, header, câu trả lời của model.
+- **Kết quả hiện có:** 62/62 test student (`-k workflow`); trên bộ public 14 claim × 5 seed: pass rate 1.000, pass^5 1.000, variance 0, cost/success 28.80 VND (`src/reports/ablation_r2.json`).
+
+### 3.2 Shape B `single` (TV2)
+
+...
+
+### 3.3 Shape C `orchestrator` (TV3)
+
 ...
 
 ## 4. Kết quả
