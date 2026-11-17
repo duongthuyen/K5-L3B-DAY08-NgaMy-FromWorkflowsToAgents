@@ -4,7 +4,7 @@
 
 - Họ tên: Hoàng Thị Thanh Nga
 - MSSV: 2A202604079
-- Email:
+- Email:hoangthanhnga2005@gmail.com
 - GitHub: `Ngahoang2005`
 
 ## 2. Phần việc phụ trách
@@ -51,4 +51,8 @@ TV3: Shape C `orchestrator` + handoff/trace.
 
 ## 6. Tự đánh giá
 
-(Thành viên tự viết.)
+Trong phần việc được giao, tôi hoàn thành shape `orchestrator`, các test riêng và phần rà soát trace của nhóm. Tôi chú trọng giữ ranh giới dữ liệu rõ ràng: handoff chỉ chứa dữ liệu được cho phép, trace chỉ ghi thông tin tóm tắt cần thiết, và thao tác hoàn tiền do host kiểm soát. Các quyết định như không chuyển facts vào handoff và truyền quote đầy đủ cho host được kiểm tra bằng test và đối chiếu với contract.
+
+Điểm tôi làm tốt là chủ động kiểm tra các nhánh và dữ liệu nhạy cảm thay vì chỉ xác nhận luồng chạy thành công; tôi cũng ghi lại căn cứ và kết quả kiểm thử để nhóm có thể rà soát. Qua việc phối hợp với các thành viên, tôi hiểu rõ hơn các ranh giới giữa shape, handoff, trace và host.
+
+Tôi cần cải thiện việc cập nhật bằng chứng kiểm thử khi các shape liên quan còn đang thay đổi. Lần rà trace ban đầu có ghi rõ `single` vẫn là stub, nhưng cần chạy lại phần kiểm tra này sau khi shape đó hoàn tất để kết luận phản ánh trạng thái cuối cùng của nhóm. Ở các lần làm việc sau, tôi sẽ thống nhất mốc tích hợp và rà soát lại các kiểm tra phụ thuộc trước khi chốt báo cáo.
