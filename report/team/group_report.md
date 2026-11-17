@@ -4,9 +4,9 @@ Tối đa 5 trang ngoài phụ lục. Số liệu lấy từ file trong `src/rep
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm:
+- Tên nhóm: NgaMy
 - Thành viên: xem `TEAM.md`
-- Commit chốt (trùng `report/team/decision_adr.md`):
+- Commit chốt (trùng `report/team/decision_adr.md`): `d2eafae`
 
 ## 2. Mục tiêu và cách tiếp cận
 
@@ -107,7 +107,20 @@ Mô tả ba shape nhóm viết (workflow, single, orchestrator): mỗi shape đ�
 
 Bảng so sánh 4 shape trên bộ public (từ `src/reports/benchmark.json`): pass rate, pass^5, seed min–max, variance, cost/success, mean/p95 steps. Kèm crash safety (`src/reports/crash.json`) và, nếu có, kết quả tự kiểm trên `student_drop/`.
 
-...
+Lệnh (chạy trong `src/`): `python -m lab8.benchmark --shapes workflow,single,orchestrator,swarm --cases data/public_claims.jsonl --seeds 11,22,33,44,55 --out reports/benchmark.json`. 14 claim × 5 seed = 70 trial mỗi shape, MockLLM, mỗi trial một SQLite mới.
+
+| Shape | Pass rate | Pass^5 | Seed min–max | Variance | Cost/success (VND mô phỏng) | Mean / p95 steps | Model calls TB |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| A `workflow` | 1.000 | 1.000 | 1.000–1.000 | 0.000000 | 28.80 | 4.43 / 5 | 1.00 |
+| B `single` | 1.000 | 1.000 | 1.000–1.000 | 0.000000 | 39.44 | 6.29 / 7 | 5.64 |
+| C `orchestrator` | 1.000 | 1.000 | 1.000–1.000 | 0.000000 | 57.14 | 3.71 / 4 | 2.00 |
+| D `swarm` | 0.986 | 0.929 | 0.929–1.000 | 0.000816 | 49.57 | 2.80 / 3 | 3.00 |
+
+- Swarm fail đúng 1 trial: `R-swarm-C-002-s55` (`status resolved != denied`). Ở seed 55, swarm tin số ngày trễ khách ghi trong ticket (5 ngày) thay vì order row (2 ngày) nên hoàn tiền cho claim lẽ ra phải từ chối.
+- Không trial nào có `leak_suspect`. T07 (approval hỏng) và T13 (approval sai claim) pass ở cả 4 shape và 5 seed.
+- Crash safety: `20/20` (`python -m lab8.crash_test --count 20 --out reports/crash.json`).
+- Ma trận student: 248/248 (4 shape × 62). Cổng host `python -m pytest -q`: xanh.
+- `student_drop/` chưa có tại thời điểm chạy nên chưa tự kiểm trên bộ hidden.
 
 Quyết định kiến trúc và lý do: xem `report/team/decision_adr.md`. Phiếu nghiên cứu và ablation: xem `report/team/research_card.md`.
 
