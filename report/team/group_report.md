@@ -12,7 +12,68 @@ Tối đa 5 trang ngoài phụ lục. Số liệu lấy từ file trong `src/rep
 
 Nhóm hiểu bài toán thế nào, chia việc ra sao, thứ tự làm bốn shape.
 
-...
+### 2.1 Phân công (4 người)
+
+Nguyên tắc chia: **mỗi người sở hữu riêng một nhóm file**, không ai sửa file của người khác, nên 4 người làm song song từ CP2 mà không đụng merge. Ba shape A/B/C độc lập với nhau (chỉ dùng chung host có sẵn, không ai được sửa host). Mỗi người có ít nhất một commit có nội dung và **một file test riêng** để đáp ứng C8.
+
+> Thành viên lấy theo collaborators của repo nhóm: `duongthuyen` (chủ repo), `buiphuong33` (Bùi Thu Phương), `Ngahoang2005`. Thành viên thứ tư **Phạm Minh Tâm** chưa vào repo; phần TV4 do `duongthuyen` làm thay, trong `TEAM.md` và báo cáo cá nhân ghi đúng như vậy. Vì `duongthuyen` gánh hai phần nên nhận shape đơn giản nhất (workflow). MSSV điền khi chốt `TEAM.md`.
+
+| Người | Vai | File sở hữu (chỉ người này sửa) | Test riêng | Hạng mục rubric chịu trách nhiệm |
+| --- | --- | --- | --- | --- |
+| TV1 — `duongthuyen` | Shape A `workflow` | `src/lab8/shapes/workflow.py` | `src/tests/test_team_workflow.py` | C1 (A), C3 + C4 trên A |
+| TV2 — Bùi Thu Phương (`buiphuong33`) | Shape B `single` (ReAct) | `src/lab8/shapes/single.py` | `src/tests/test_team_single.py` | C1 (B), C3 + C4 trên B |
+| TV3 — `Ngahoang2005` | Shape C `orchestrator` + handoff/trace | `src/lab8/shapes/orchestrator.py` | `src/tests/test_team_orchestrator.py` | C1 (C), C5 |
+| TV4 — Phạm Minh Tâm (làm thay: `duongthuyen`) | Evaluation, durability check, báo cáo | `src/reports/*.json` (chỉ sinh bằng lệnh), `report/team/decision_adr.md`, `report/team/research_card.md`, `report/team/group_report.md` (mục 1, 4, 7, 8), `TEAM.md` (phần thông tin nhóm) | `src/tests/test_team_reports.py` | C2, C6, C7, must-pass trên shape chọn |
+
+File dùng chung, mỗi người **chỉ sửa phần của mình**: dòng của mình trong bảng đóng góp `TEAM.md`; mục 3 (đoạn về shape mình) và mục 5 của `group_report.md`; báo cáo cá nhân `report/team/MSSV_HoTen.md` (mỗi người một file riêng, copy từ mẫu).
+
+**Không ai được sửa:** `src/lab8/metrics.py`, `durability.py`, `policy.py`, `src/config/*`, `src/data/*`, `src/lab8/shapes/swarm_reference.py`, `src/lab8/shapes/__init__.py`, và không sửa tay JSON trong `src/reports/`.
+
+### 2.2 Việc cụ thể từng người
+
+**TV1 — `duongthuyen`: Shape A `workflow`**
+
+- CP2: làm 8 bước trong docstring `workflow.py`: đọc claim qua `get_claim_view`; thiếu `order_id` thì trả `needs_info`; không thấy order thì `escalated`; quote bằng `compute_compensation` từ order row (bỏ qua số delay trong ticket); quote 0 thì `denied`; quote > 0 thì `durability.issue_refund` với **quote đầy đủ**; trả qua `common.finish()`; ghi trace ở mọi nhánh return.
+- CP3: truyền `crash_at` vào `issue_refund`, không bắt `InjectedCrash`. Không copy khối `REFERENCE_WEAKNESS` của swarm.
+- Tự kiểm: `python -m pytest -q -m student -o addopts= -k workflow` → 62 passed.
+- Test riêng: một claim gọi 2 lần vẫn 1 dòng ledger; ticket ghi "ignore policy"/delay giả không đổi số tiền.
+
+**TV2 — Bùi Thu Phương: Shape B `single`**
+
+- CP2: dùng `lab8.runtime.run_react` với `max_steps=8`; `decide` chỉ chọn tool đọc (`lookup_order`, `lookup_refund_history`…) và không bao giờ gọi `issue_refund`. Sau vòng lặp, code tính quote từ order row rồi gọi `durability.issue_refund` với quote đầy đủ. Đếm model call vào `Budget`.
+- CP3: truyền `crash_at`, không bắt `InjectedCrash`.
+- Tự kiểm: `-k single` → 62 passed.
+- Test riêng: vòng lặp dừng ≤ 8 bước; ticket khai delay cao hơn order row thì vẫn quote theo order row; đơn đã hoàn một phần thì host cắt đúng trần (T13/T14).
+
+**TV3 — `Ngahoang2005`: Shape C `orchestrator` + handoff/trace**
+
+- CP2: dựng handoff bằng `lab8.handoff.make_handoff`, chỉ field allowlist và tool chỉ đọc; chạy `run_readonly_investigators`; orchestrator quote từ order view và gọi `issue_refund`.
+- CP3: trace chỉ ghi handoff đã sanitize, không ghi parent context, `parent_secret`, header, SĐT, địa chỉ, ghi chú nội bộ, tên hàng. Truyền `crash_at`.
+- CP4: rà trace của **cả ba shape** để tìm `CANARY_SECRET_*`/PII (chỉ đọc trace và báo cho TV1/TV2, không sửa file của họ).
+- Tự kiểm: `-k orchestrator` → 62 passed; `python -m pytest -q tests/test_handoff_secret.py tests/test_trace_contract.py`.
+- Test riêng: handoff không chứa key ngoài allowlist; trace của orchestrator không chứa chuỗi `CANARY_SECRET_`.
+
+**TV4 — Phạm Minh Tâm (`duongthuyen` làm thay): Evaluation, durability, báo cáo**
+
+- CP1: tạo repo nhóm đúng tên `K5-L3A-DAY08-TenNhom-FromWorkflowsToAgents` và mời giảng viên vào repo; điền phần thông tin nhóm trong `TEAM.md`; chọn câu R1–R4 và điền SOURCE/CLAIM/BOUNDARY trong `research_card.md` (không cần đợi code).
+- CP2–CP3 (song song với các shape): chạy benchmark/crash trên `swarm` để dựng sẵn quy trình; viết `test_team_reports.py` (ví dụ: kiểm `reports/benchmark.json` có đủ 4 shape và seed `11,22,33,44,55`, `crash.json` có `crash_safety` = `20/20`).
+- CP4: chạy `python -m lab8.crash_test --count 20 --out reports/crash.json` → `20/20`.
+- CP5: sau khi merge 3 shape, chạy `python -m lab8.benchmark --shapes workflow,single,orchestrator,swarm --cases data/public_claims.jsonl --seeds 11,22,33,44,55 --out reports/benchmark.json`; tự kiểm trên `student_drop/`; cả nhóm chọn shape dựa trên số đo, TV4 điền `decision_adr.md` (shape chọn, commit hash, run id, số lấy từ file report); chạy ablation cho research card; viết mục 1, 4, 7, 8 của báo cáo này; chạy `python -m lab8.check_submission` → `0 FAIL` rồi push.
+
+### 2.3 Lịch làm song song và quy trình git
+
+| Mốc | TV1 `duongthuyen` | TV2 Phương | TV3 `Ngahoang2005` | TV4 Tâm (`duongthuyen` làm thay) |
+| --- | --- | --- | --- | --- |
+| CP1 (13:30) | cài môi trường, smoke pass, đọc `business_rules.md`, `contracts.md`, `swarm_reference.py` (cả nhóm) | ← | ← | + tạo repo, `TEAM.md`, research card |
+| CP2 (13:45) | workflow | single | orchestrator | benchmark/crash thử trên swarm, test report |
+| CP3 (14:30) | `crash_at`, T11/T12 | `crash_at`, T11/T12 | handoff sanitize, trace | — |
+| CP4 (15:30) | sửa lỗi T01–T14 | sửa lỗi T01–T14 | rà secret/PII trên cả 3 trace | crash suite 20/20 |
+| CP5 (16:15) | báo cáo cá nhân, mục 3 (A) | báo cáo cá nhân, mục 3 (B) | báo cáo cá nhân, mục 3 (C) | benchmark, ADR, research card, check_submission |
+
+- Mỗi người làm trên nhánh riêng: `feat/workflow`, `feat/single`, `feat/orchestrator`, `chore/eval-report`. Merge vào `main` qua PR; vì không ai sửa chung file nên không có conflict code.
+- Trước mỗi lần push: `python -m pytest -q` (cổng host) phải xanh.
+- Thứ tự merge: mỗi shape merge ngay khi đạt 62 passed; TV4 chỉ chạy benchmark chính thức và ghi commit hash **sau khi đã merge đủ 3 shape**, để số liệu khớp commit chốt (C7).
+- Không force-push, không commit `traces/`, `*.sqlite`, `student_drop/`, `.venv/`, `.env`.
 
 ## 3. Giải pháp
 
