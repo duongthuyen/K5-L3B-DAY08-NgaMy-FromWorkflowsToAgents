@@ -88,9 +88,16 @@ Mô tả ba shape nhóm viết (workflow, single, orchestrator): mỗi shape đ�
 - **Trace:** event `claim` (claim_id, `has_order_id`), `lookup_order` (order view đã allowlist hoặc lý do không thấy), `quote`, `issue_refund` (ok/conflict/reason), `crash`, `decision`. Cố ý **không** ghi: claim row, `principal_id`, ticket, `parent_secret`, header, câu trả lời của model.
 - **Kết quả hiện có:** 62/62 test student (`-k workflow`); trên bộ public 14 claim × 5 seed: pass rate 1.000, pass^5 1.000, variance 0, cost/success 28.80 VND (`src/reports/ablation_r2.json`).
 
-### 3.2 Shape B `single` (TV2)
+### 3.2 Shape B `single` (TV2 — Bùi Thu Phương)
 
-...
+Tóm tắt từ code `src/lab8/shapes/single.py` (`281de5a`) và báo cáo cá nhân của TV2.
+
+- **Đọc:** vòng ReAct qua `lab8.runtime.run_react`, tối đa 8 bước (`MAX_STEPS = 8`). Mỗi bước `decide()` chọn một tool **chỉ đọc**, theo thứ tự `get_claim_view` → `lookup_order` → `lookup_refund_history` → `compute_compensation`, rồi trả `final`. Agent giữ một dict `memory` qua các bước vì `run_react` chỉ đưa kết quả của tool vừa gọi.
+- **Quyết định:** dừng sớm khi không có claim (`failed`), thiếu `order_id` (`needs_info`), order không thuộc khách (`escalated`). Sau vòng lặp, **code** (không phải agent) lấy quote từ kết quả `compute_compensation` trong `memory`: quote 0 → `denied`; quote > 0 → `durability.issue_refund(conn, claim_id, quote đầy đủ, crash_at=crash_at)`. Vượt 8 bước → `failed` / `step_cap`, không hoàn tiền.
+- **Ranh giới code / model:** agent không có tool ghi; `runtime.dispatch` chặn `issue_refund` bằng `ToolRejected` (test `test_write_tool_from_decide_is_rejected`). Prompt mỗi bước chỉ có số bước và tên tool vừa gọi, không có ticket. Số tiền không lấy từ câu `final` của model.
+- **Crash:** truyền `crash_at`, không nuốt `InjectedCrash`; trace được ghi rồi ném tiếp.
+- **Trace:** event `claim` (`has_order_id`), `lookup_order` (order view đã allowlist), `lookup_refund_history`, `quote`, `react_stop`, `issue_refund`, `crash`, `decision`. Cố ý **không** ghi: claim row, `principal_id`, ticket, `parent_secret`, header, câu trả lời của model.
+- **Kết quả:** 62/62 test student (`-k single`); test riêng `test_team_single.py` 63 passed. Trên bộ public: pass rate 1.000, pass^5 1.000, cost/success 39.44 VND, trung bình 5.64 lần gọi model (workflow: 1).
 
 ### 3.3 Shape C `orchestrator` (TV3)
 
@@ -102,6 +109,7 @@ Mô tả ba shape nhóm viết (workflow, single, orchestrator): mỗi shape đ�
 - **Trace:** event `handoff` (đã sanitize), `investigator` (`claim_view` allowlist, `order_visible`, `order_reason`, `policy_count`, `prior_refund_count`), `quote` (`amount_vnd`, `reason`), `crash`, `decision`. Cố ý **không** ghi: claim row, `principal_id`, ticket, `parent_secret`, header, order view đầy đủ, câu trả lời của model.
 - **Kết quả hiện có:** 62/62 test student (`-k orchestrator`); test riêng `test_team_orchestrator.py` 56 passed.
 - **CP4 (rà trace cả ba shape):** 3 shape × 14 claim × 5 seed = 210 lần chạy, quét trace + `RunResult` tìm canary, `Bearer`, SĐT, địa chỉ, tên hàng, ghi chú nội bộ, nguyên văn ticket: 0 lần trùng. Lúc rà, `single` còn là stub, cần rà lại sau khi TV2 xong.
+- **Rà lại sau khi merge đủ 3 shape** (TV4, trên commit chốt `d2eafae`): 3 shape × 14 claim × 5 seed (11, 22, 33, 44, 55) = 210 lần chạy. Quét `RunResult` và mọi file `<run_id>*` (dùng `lab8.metrics.artifact_blob`) tìm `forbid_substrings` của từng claim, `CANARY_SECRET_`, `CANARY_INTERNAL_`, `Bearer`, `parent_secret`, `raw_headers`, các field PII của order (SĐT, địa chỉ, tên hàng, ghi chú) và nguyên văn ticket: **0 lần trùng**.
 
 ## 4. Kết quả
 
@@ -133,12 +141,23 @@ Lỗi gặp phải (kèm lệnh, output hoặc ảnh chụp) và cách nhóm x�
 - Script rà trace chạy ngoài `src/` báo `ModuleNotFoundError: No module named 'lab8'`. Xử lý: đặt `PYTHONPATH` trỏ tới `src/` trước khi chạy (Windows PowerShell: `$env:PYTHONPATH = (Get-Location).Path`).
 - Máy chưa cài GitHub CLI (`gh: command not found`) nên không tạo PR bằng dòng lệnh; push nhánh `feat/orchestrator` rồi đưa lên `main` bằng fast-forward (chỉ có commit của TV3, không đụng file người khác).
 
-...
+**TV1 / TV4 (Dương Thị Huyền)**
+
+- Repo nhóm trên GitHub chưa ghi thông tin thành viên, và thành viên thứ tư (Phạm Minh Tâm) chưa vào repo. Xử lý: lấy danh sách thành viên từ trang collaborators của repo, chia phần TV4 cho Huyền làm thay và ghi rõ trong `TEAM.md`, báo cáo nhóm, báo cáo cá nhân.
+- Máy dùng Python 3.14, mới hơn khoảng 3.11–3.13 trong hướng dẫn. Đã kiểm: `python -m lab8.smoke` ra `lab8.smoke pass`, cổng host và ma trận student đều xanh, nên giữ nguyên.
+- Benchmark chính thức chỉ chạy được khi đủ 3 shape. Xử lý: chạy thử `workflow,swarm` trước (`reports/ablation_r2.json`) để dựng quy trình, merge nhánh TV2 sau khi chạy test, rồi mới chạy benchmark 4 shape và ghi commit hash vào ADR. Đã chạy lại benchmark, crash và ablation trên máy: kết quả trùng khớp 100% với file đã commit.
+- `student_drop/` chưa được phát tại thời điểm chạy, nên chưa tự kiểm trên bộ hidden.
+
+**TV2 (Bùi Thu Phương)**
+
+- `run_react` chỉ đưa cho `decide` kết quả tool vừa gọi, nên bước sau mất `order_id` và quote. Xử lý: agent giữ dict `memory` riêng qua các bước (xem báo cáo cá nhân TV2).
 
 ## 6. Tổng hợp đóng góp
 
 Chi tiết đóng góp của từng thành viên nằm trong `TEAM.md` (bảng đóng góp) và báo cáo cá nhân `report/team/MSSV_HoTen.md`.
 
+- **Bùi Thu Phương (TV2, 2A202604080)**: shape B `single` (`281de5a`), 62/62 test student; test riêng `test_team_single.py` (63 test). Báo cáo: `report/team/2A202604080_BuiThuPhuong.md`.
+- **Hoàng Thị Thanh Nga (TV3, 2A202604079)**: shape C `orchestrator` + handoff/trace (`bc3d56b`), 62/62 test student; test riêng `test_team_orchestrator.py`; rà trace CP4. Báo cáo: `report/team/2A202604079_HoangThiThanhNga.md`.
 - **Dương Thị Huyền (TV1, 2A202604077)**:
   - Phần việc: shape A `workflow` (`c59cf58`), đạt 62/62 test student; test riêng `test_team_workflow.py`.
   - Điều phối: chia việc, điền `TEAM.md`, kiểm tra và merge nhánh. Báo cáo: `report/team/2A202604077_DuongThiHuyen.md`.
@@ -150,8 +169,15 @@ Chi tiết đóng góp của từng thành viên nằm trong `TEAM.md` (bảng �
 
 MockLLM không phải model sản xuất; latency là `unavailable`. Nêu thêm giới hạn của nhóm và điều kiện làm kết luận thay đổi.
 
-...
+- **MockLLM tất định:** cùng seed và prompt thì ra cùng kết quả. Lỗi của swarm là lỗi được cài sẵn (`seed % 5 == 0`), nên benchmark chỉ so sánh topology trong môi trường mô phỏng, không đo được độ dao động thật của một LLM. Cost là VND mô phỏng từ `pricing.yaml`.
+- **Bộ public nhỏ:** 14 claim, chỉ C-002 có số ngày trễ trong ticket khác order row. Pass rate 1.000 của ba shape nhóm viết chưa chứng minh được kết quả trên bộ hidden 40 claim; chưa tự kiểm trên `student_drop/`.
+- **Single và orchestrator tất định trên MockLLM:** `decide()` của single đi theo thứ tự tool cố định, nên chưa đo được rủi ro khi model thật chọn tool sai hoặc lặp. Lớp chặn `step_cap` và `ToolRejected` đã có test, nhưng chi phí và số bước sẽ khác khi dùng model thật.
+- **Điều kiện làm kết luận đổi:** nếu claim cần hiểu ngôn ngữ tự do (ticket không có `order_id` nhưng mô tả đủ để tìm đơn, hoặc nhiều đơn trong một ticket), workflow luật cứng sẽ trả `needs_info` nhiều hơn mức cần. Khi đó single hoặc orchestrator có thể đáng với chi phí cao hơn, nếu benchmark trên cùng corpus và cùng seed cho thấy pass tăng vượt ngoài độ dao động.
+- **Hướng cải thiện:** chạy tự kiểm trên `student_drop/` khi có; thêm claim tự viết nhãn tay cho các ca ticket mâu thuẫn order row; làm một bonus kiểu `swarm_verified` (đối chiếu delay của peer với order row) để đo xem một bước kiểm chứng có xóa được lỗi seed 55 không.
 
 ## 8. Tài liệu tham khảo
 
-...
+- Đề bài và tài liệu lab: `README.md`, `RUBRIC.md`, `RULES.md`, `CHECKPOINTS.md`, `docs/business_rules.md`, `docs/contracts.md`, `docs/architecture.md`, `docs/metrics.md`.
+- Cemri et al., *Why Do Multi-Agent LLM Systems Fail?* (MAST), NeurIPS 2025 Datasets & Benchmarks, https://arxiv.org/abs/2503.13657 (dùng cho research card R2).
+- Code tham chiếu `src/lab8/shapes/swarm_reference.py` (chỉ đọc để so sánh, không copy khối `REFERENCE_WEAKNESS`).
+- Công cụ AI: Claude Code, ghi chi tiết trong báo cáo cá nhân của từng thành viên.
