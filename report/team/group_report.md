@@ -94,7 +94,14 @@ Mô tả ba shape nhóm viết (workflow, single, orchestrator): mỗi shape đ�
 
 ### 3.3 Shape C `orchestrator` (TV3)
 
-...
+- **Đọc:** orchestrator đọc claim row (`principal_id`, `order_id`, ticket) trong code để định tuyến; row này **không** vào handoff hay trace. Investigator nhận handoff và chạy qua `run_readonly_investigators` với bốn tool chỉ đọc: `lookup_order`, `lookup_policy`, `lookup_refund_history`, `compute_compensation`.
+- **Handoff:** dựng bằng `make_handoff` với `facts={}`, `task="check_applicable_policy"`. Allowlist nằm trong code (`ALLOWED_FIELDS`, `FACT_KEYS`, `READONLY_TOOLS`), `sanitize` chặn canary và tool ghi. Không dùng LLM để tóm tắt context thay cho allowlist.
+- **Quyết định (toàn bộ bằng code):** không có claim → `failed`; thiếu `order_id` → `needs_info`; order không thấy hoặc ngoài phạm vi khách → `escalated`; quote từ `compute_compensation` trên order row; quote 0 → `denied`; quote > 0 → orchestrator gọi `durability.issue_refund(conn, claim_id, quote đầy đủ, crash_at=crash_at)`. Host từ chối → `denied`; xung đột → `failed`; thành công → `resolved`.
+- **Ranh giới code / model:** MockLLM chỉ được gọi để đọc ticket (`parse`) và soạn câu trả lời (`draft`); không số nào từ model dùng để tính tiền. Delay ghi trong ticket bị bỏ qua, khác swarm (không có `REFERENCE_WEAKNESS`). Investigator không có tool ghi.
+- **Crash:** `InjectedCrash` không bị bắt lại; trace được ghi rồi ném tiếp để chạy lại vẫn chỉ ra một refund.
+- **Trace:** event `handoff` (đã sanitize), `investigator` (`claim_view` allowlist, `order_visible`, `order_reason`, `policy_count`, `prior_refund_count`), `quote` (`amount_vnd`, `reason`), `crash`, `decision`. Cố ý **không** ghi: claim row, `principal_id`, ticket, `parent_secret`, header, order view đầy đủ, câu trả lời của model.
+- **Kết quả hiện có:** 62/62 test student (`-k orchestrator`); test riêng `test_team_orchestrator.py` 56 passed.
+- **CP4 (rà trace cả ba shape):** 3 shape × 14 claim × 5 seed = 210 lần chạy, quét trace + `RunResult` tìm canary, `Bearer`, SĐT, địa chỉ, tên hàng, ghi chú nội bộ, nguyên văn ticket: 0 lần trùng. Lúc rà, `single` còn là stub, cần rà lại sau khi TV2 xong.
 
 ## 4. Kết quả
 
@@ -107,6 +114,11 @@ Quyết định kiến trúc và lý do: xem `report/team/decision_adr.md`. Phi�
 ## 5. Khó khăn và cách xử lý
 
 Lỗi gặp phải (kèm lệnh, output hoặc ảnh chụp) và cách nhóm xử lý.
+
+**TV3 (`Ngahoang2005`)**
+
+- Script rà trace chạy ngoài `src/` báo `ModuleNotFoundError: No module named 'lab8'`. Xử lý: đặt `PYTHONPATH` trỏ tới `src/` trước khi chạy (Windows PowerShell: `$env:PYTHONPATH = (Get-Location).Path`).
+- Máy chưa cài GitHub CLI (`gh: command not found`) nên không tạo PR bằng dòng lệnh; push nhánh `feat/orchestrator` rồi đưa lên `main` bằng fast-forward (chỉ có commit của TV3, không đụng file người khác).
 
 ...
 
