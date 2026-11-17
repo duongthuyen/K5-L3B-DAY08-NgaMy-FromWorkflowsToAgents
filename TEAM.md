@@ -29,10 +29,10 @@ Gợi ý chia vai:
 
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
-| `duongthuyen` | Shape A `workflow` | | `src/tests/test_team_workflow.py` |
+| `duongthuyen` | Shape A `workflow` | `c59cf58` feat(workflow): cài shape A workflow | `src/tests/test_team_workflow.py` |
 | Bùi Thu Phương (`buiphuong33`) | Shape B `single` | | `src/tests/test_team_single.py` |
 | `Ngahoang2005` | Shape C `orchestrator` + handoff/trace | | `src/tests/test_team_orchestrator.py` |
-| Phạm Minh Tâm (`duongthuyen` làm thay) | Evaluation + báo cáo | | `src/tests/test_team_reports.py` |
+| Phạm Minh Tâm (`duongthuyen` làm thay) | Evaluation + báo cáo | `5814f68` chore(eval): crash suite, ablation R2, research card | `src/tests/test_team_reports.py` |
 
 ## Cá nhân
 
