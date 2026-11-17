@@ -2,17 +2,21 @@
 
 ## Thông tin nhóm
 
-- Tên nhóm:
+- Tên nhóm: NgaMy
 - Lớp: L3A
 - Repo nhóm: `K5-L3A-DAY08-TenNhom-FromWorkflowsToAgents` (xem [SUBMISSION.md](SUBMISSION.md))
-- URL repo, nhánh nộp, commit chốt:
+- URL repo, nhánh nộp, commit chốt: https://github.com/duongthuyen/K5-L3B-DAY08-NgaMy-FromWorkflowsToAgents, nhánh `main`, commit chốt: (điền ở CP5, trùng `report/team/decision_adr.md`)
 
 ## Thành viên
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 |        |      |       |        |         |
-|   2 |        |      |       |        |         |
+|   1 | (điền họ tên) |      |       | `duongthuyen` | TV1: Shape A `workflow` (`src/lab8/shapes/workflow.py`) |
+|   2 | Bùi Thu Phương |      |       | `buiphuong33` | TV2: Shape B `single` (`src/lab8/shapes/single.py`) |
+|   3 | (điền họ tên) |      |       | `Ngahoang2005` | TV3: Shape C `orchestrator` + handoff/trace (`src/lab8/shapes/orchestrator.py`) |
+|   4 | Phạm Minh Tâm |      |       | — (chưa vào repo) | TV4: Evaluation, crash suite, ADR, research card, báo cáo; phần việc do `duongthuyen` làm thay |
+
+Phân công chi tiết, file sở hữu và lịch theo checkpoint: [report/team/group_report.md](report/team/group_report.md) mục 2.
 
 Gợi ý chia vai:
 
@@ -25,7 +29,10 @@ Gợi ý chia vai:
 
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
-| | | | |
+| `duongthuyen` | Shape A `workflow` | | `src/tests/test_team_workflow.py` |
+| Bùi Thu Phương (`buiphuong33`) | Shape B `single` | | `src/tests/test_team_single.py` |
+| `Ngahoang2005` | Shape C `orchestrator` + handoff/trace | | `src/tests/test_team_orchestrator.py` |
+| Phạm Minh Tâm (`duongthuyen` làm thay) | Evaluation + báo cáo | | `src/tests/test_team_reports.py` |
 
 ## Cá nhân
 
