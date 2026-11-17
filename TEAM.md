@@ -13,7 +13,7 @@
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 | (điền họ tên) |      |       | `duongthuyen` | TV1: Shape A `workflow` (`src/lab8/shapes/workflow.py`) |
 |   2 | Bùi Thu Phương |      |       | `buiphuong33` | TV2: Shape B `single` (`src/lab8/shapes/single.py`) |
-|   3 | (điền họ tên) |      |       | `Ngahoang2005` | TV3: Shape C `orchestrator` + handoff/trace (`src/lab8/shapes/orchestrator.py`) |
+|   3 | Hoàng Thị Thanh Nga |      |       | `Ngahoang2005` | TV3: Shape C `orchestrator` + handoff/trace (`src/lab8/shapes/orchestrator.py`) |
 |   4 | Phạm Minh Tâm |      |       | — (chưa vào repo) | TV4: Evaluation, crash suite, ADR, research card, báo cáo; phần việc do `duongthuyen` làm thay |
 
 Phân công chi tiết, file sở hữu và lịch theo checkpoint: [report/team/group_report.md](report/team/group_report.md) mục 2.
@@ -31,7 +31,7 @@ Gợi ý chia vai:
 | --- | --- | --- | --- |
 | `duongthuyen` | Shape A `workflow` | `c59cf58` feat(workflow): cài shape A workflow | `src/tests/test_team_workflow.py` |
 | Bùi Thu Phương (`buiphuong33`) | Shape B `single` | | `src/tests/test_team_single.py` |
-| `Ngahoang2005` | Shape C `orchestrator` + handoff/trace | | `src/tests/test_team_orchestrator.py` |
+| Hoàng Thị Thanh Nga (`Ngahoang2005`) | Shape C `orchestrator` + handoff/trace | `bc3d56b` feat(orchestrator): shape C với handoff allowlist và trace sạch | `src/tests/test_team_orchestrator.py` |
 | Phạm Minh Tâm (`duongthuyen` làm thay) | Evaluation + báo cáo | `5814f68` chore(eval): crash suite, ablation R2, research card | `src/tests/test_team_reports.py` |
 
 ## Cá nhân
