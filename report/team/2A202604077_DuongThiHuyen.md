@@ -50,6 +50,7 @@ Làm hai phần:
   - `98ab63a`: merge `feat/shape-b-single` của TV2, sau khi kiểm cổng host, ma trận student 248/248 và việc nhánh không sửa file thước đo.
   - `d2eafae`: `src/reports/benchmark.json` (4 shape × 14 claim × 5 seed), chạy lại `crash.json` (20/20).
   - `6414cb0`: điền `decision_adr.md`, chọn `workflow`, commit chốt `d2eafae`. Điền mục 4 của báo cáo nhóm. `check_submission`: `0 FAIL, 0 WARN`.
+- **Tự kiểm hidden (TV4):** giải nén `student_drop/` vào `src/`, chạy benchmark 3 shape trên 40 claim × 5 seed, sinh `src/reports/hidden_selfcheck.json`. Kết quả: 600 trial không lỗi, không `leak_suspect`, 3 shape cùng trạng thái ở cả 200 cặp (claim, seed). Quét trace tìm 80 secret hidden và các field PII của order: 0 lần trùng.
 - **Tài liệu nhóm:**
   - `011d8eb`: phân công 4 người trong `group_report.md`.
   - `dc7222d`, `c49fc90`: `TEAM.md` và bảng đóng góp.

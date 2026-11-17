@@ -128,7 +128,11 @@ Lệnh (chạy trong `src/`): `python -m lab8.benchmark --shapes workflow,single
 - Không trial nào có `leak_suspect`. T07 (approval hỏng) và T13 (approval sai claim) pass ở cả 4 shape và 5 seed.
 - Crash safety: `20/20` (`python -m lab8.crash_test --count 20 --out reports/crash.json`).
 - Ma trận student: 248/248 (4 shape × 62). Cổng host `python -m pytest -q`: xanh.
-- `student_drop/` chưa có tại thời điểm chạy nên chưa tự kiểm trên bộ hidden.
+- **Tự kiểm trên bộ hidden** (`src/reports/hidden_selfcheck.json`, lệnh `python -m lab8.benchmark --shapes workflow,single,orchestrator --cases student_drop/hidden_claims.jsonl --world student_drop/hidden_world_state.json --out reports/hidden_selfcheck.json`). Bộ này 40 claim × 5 seed, không có nhãn, nên không tính được pass rate.
+  - Cả 3 shape chạy hết 200/200 trial: không lỗi, không `failed`, trace đúng contract, không trial nào `leak_suspect`.
+  - Phân bố trạng thái giống hệt nhau ở cả 3 shape: `resolved` 90, `denied` 95, `escalated` 10, `needs_info` 5. Ba shape cho **cùng trạng thái ở cả 200 cặp (claim, seed)**.
+  - Chi phí mô phỏng cho 200 trial: workflow 5988.3 VND (1.0 model call/trial), single 8269.7 VND (5.83), orchestrator 11916.0 VND (2.0).
+  - TV4 quét thêm trace và `RunResult` của 600 lần chạy, tìm `parent_secret`/header của 40 claim hidden (80 chuỗi), canary, các field PII của order hidden (SĐT, địa chỉ, ghi chú, tên hàng) và nguyên văn ticket: **0 lần trùng**.
 
 Quyết định kiến trúc và lý do: xem `report/team/decision_adr.md`. Phiếu nghiên cứu và ablation: xem `report/team/research_card.md`.
 
@@ -146,7 +150,7 @@ Lỗi gặp phải (kèm lệnh, output hoặc ảnh chụp) và cách nhóm x�
 - Repo nhóm trên GitHub chưa ghi thông tin thành viên, và thành viên thứ tư (Phạm Minh Tâm) chưa vào repo. Xử lý: lấy danh sách thành viên từ trang collaborators của repo, chia phần TV4 cho Huyền làm thay và ghi rõ trong `TEAM.md`, báo cáo nhóm, báo cáo cá nhân.
 - Máy dùng Python 3.14, mới hơn khoảng 3.11–3.13 trong hướng dẫn. Đã kiểm: `python -m lab8.smoke` ra `lab8.smoke pass`, cổng host và ma trận student đều xanh, nên giữ nguyên.
 - Benchmark chính thức chỉ chạy được khi đủ 3 shape. Xử lý: chạy thử `workflow,swarm` trước (`reports/ablation_r2.json`) để dựng quy trình, merge nhánh TV2 sau khi chạy test, rồi mới chạy benchmark 4 shape và ghi commit hash vào ADR. Đã chạy lại benchmark, crash và ablation trên máy: kết quả trùng khớp 100% với file đã commit.
-- `student_drop/` chưa được phát tại thời điểm chạy, nên chưa tự kiểm trên bộ hidden.
+- File `student_drop.zip` giải nén ra thư mục lồng hai lớp (`src/student_drop/student_drop/`), trong khi lệnh tự kiểm cần `src/student_drop/hidden_claims.jsonl`. Xử lý: chuyển 2 file lên đúng `src/student_drop/`. Thư mục này đã nằm trong `.gitignore`, nên không commit dữ liệu hidden.
 
 **TV2 (Bùi Thu Phương)**
 
@@ -170,10 +174,10 @@ Chi tiết đóng góp của từng thành viên nằm trong `TEAM.md` (bảng �
 MockLLM không phải model sản xuất; latency là `unavailable`. Nêu thêm giới hạn của nhóm và điều kiện làm kết luận thay đổi.
 
 - **MockLLM tất định:** cùng seed và prompt thì ra cùng kết quả. Lỗi của swarm là lỗi được cài sẵn (`seed % 5 == 0`), nên benchmark chỉ so sánh topology trong môi trường mô phỏng, không đo được độ dao động thật của một LLM. Cost là VND mô phỏng từ `pricing.yaml`.
-- **Bộ public nhỏ:** 14 claim, chỉ C-002 có số ngày trễ trong ticket khác order row. Pass rate 1.000 của ba shape nhóm viết chưa chứng minh được kết quả trên bộ hidden 40 claim; chưa tự kiểm trên `student_drop/`.
+- **Bộ public nhỏ:** 14 claim, chỉ C-002 có số ngày trễ trong ticket khác order row. Pass rate 1.000 của ba shape nhóm viết chưa chứng minh được kết quả trên bộ hidden 40 claim. Tự kiểm trên `student_drop/` chỉ xác nhận chạy hết, trace sạch và 3 shape cho kết quả giống nhau; vì không có nhãn nên không biết chúng **cùng đúng** hay **cùng sai**.
 - **Single và orchestrator tất định trên MockLLM:** `decide()` của single đi theo thứ tự tool cố định, nên chưa đo được rủi ro khi model thật chọn tool sai hoặc lặp. Lớp chặn `step_cap` và `ToolRejected` đã có test, nhưng chi phí và số bước sẽ khác khi dùng model thật.
 - **Điều kiện làm kết luận đổi:** nếu claim cần hiểu ngôn ngữ tự do (ticket không có `order_id` nhưng mô tả đủ để tìm đơn, hoặc nhiều đơn trong một ticket), workflow luật cứng sẽ trả `needs_info` nhiều hơn mức cần. Khi đó single hoặc orchestrator có thể đáng với chi phí cao hơn, nếu benchmark trên cùng corpus và cùng seed cho thấy pass tăng vượt ngoài độ dao động.
-- **Hướng cải thiện:** chạy tự kiểm trên `student_drop/` khi có; thêm claim tự viết nhãn tay cho các ca ticket mâu thuẫn order row; làm một bonus kiểu `swarm_verified` (đối chiếu delay của peer với order row) để đo xem một bước kiểm chứng có xóa được lỗi seed 55 không.
+- **Hướng cải thiện:** thêm claim tự viết nhãn tay cho các ca ticket mâu thuẫn order row; làm một bonus kiểu `swarm_verified` (đối chiếu delay của peer với order row) để đo xem một bước kiểm chứng có xóa được lỗi seed 55 không.
 
 ## 8. Tài liệu tham khảo
 
