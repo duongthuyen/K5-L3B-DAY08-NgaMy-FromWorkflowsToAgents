@@ -168,6 +168,7 @@ Chi tiết đóng góp của từng thành viên nằm trong `TEAM.md` (bảng �
 - **Phạm Minh Tâm (TV4, `minhtama11qc-hash`; phần việc do Dương Thị Huyền làm thay)**:
   - Đã xong (`5814f68`): crash suite 20/20 (`src/reports/crash.json`); ablation R2 (`src/reports/ablation_r2.json`); research card; test riêng `test_team_reports.py`.
   - CP5: merge nhánh của TV2 (`98ab63a`), benchmark 4 shape (`d2eafae`), ADR chọn `workflow` (`6414cb0`), `check_submission` ra `0 FAIL`.
+  - Tâm làm sau khi vào repo (`dcfdbb2`): mở rộng `test_team_reports.py`, thêm must-pass 3 (crash rồi resume) cho `single` và `orchestrator` ở cả 3 điểm crash; test chạy lại không crash vẫn 1 audit; test kiểm `hidden_selfcheck.json` (0 error, 0 leak, 3 shape cùng status). `test_team_reports.py` từ 6 lên 15 test. Báo cáo cá nhân của Tâm.
 
 ## 7. Hạn chế và hướng cải thiện
 
