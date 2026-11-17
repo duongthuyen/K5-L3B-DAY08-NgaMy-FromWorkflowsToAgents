@@ -63,3 +63,55 @@ def test_benchmark_report_covers_contract() -> None:
     assert shapes <= REQUIRED_SHAPES and "workflow" in shapes and "swarm" in shapes
     for trial in report["trials"]:
         assert trial["run_id"] == f"R-{trial['shape']}-{trial['claim_id']}-s{trial['seed']}"
+
+
+# --- Phần bổ sung của Phạm Minh Tâm (TV4, minhtama11qc-hash) ---
+# Must-pass 3 trên cả ba shape nhóm viết (trước đó chỉ có workflow),
+# và kiểm file tự kiểm hidden mà group report / ADR trích dẫn.
+
+from lab8.shapes.orchestrator import run_claim as orchestrator_run
+from lab8.shapes.single import run_claim as single_run
+
+TEAM_SHAPES = {"single": single_run, "orchestrator": orchestrator_run}
+
+
+@pytest.mark.parametrize("point", CRASH_POINTS)
+@pytest.mark.parametrize("shape", sorted(TEAM_SHAPES))
+def test_agent_shapes_crash_then_resume_pays_once(public_db: Path, shape: str, point: str) -> None:
+    run = TEAM_SHAPES[shape]
+    with pytest.raises(InjectedCrash):
+        run("C-012", seed=11, store_path=str(public_db), crash_at=point)
+    resumed = run("C-012", seed=11, store_path=str(public_db))
+    assert resumed.status == "resolved"
+    conn = connect(str(public_db))
+    assert get_refund(conn, "C-012")["amount_vnd"] == 35000
+    assert committed_audit_count(conn, "C-012") == 1
+    conn.close()
+
+
+@pytest.mark.parametrize("shape", ["workflow", *sorted(TEAM_SHAPES)])
+def test_resume_without_crash_is_idempotent(public_db: Path, shape: str) -> None:
+    run = {"workflow": workflow_run, **TEAM_SHAPES}[shape]
+    first = run("C-012", seed=11, store_path=str(public_db))
+    second = run("C-012", seed=11, store_path=str(public_db))
+    assert first.status == second.status == "resolved"
+    conn = connect(str(public_db))
+    assert committed_audit_count(conn, "C-012") == 1
+    conn.close()
+
+
+def test_hidden_selfcheck_report_is_clean_and_consistent() -> None:
+    report = _report("hidden_selfcheck.json")
+    if report is None:
+        pytest.skip("reports/hidden_selfcheck.json not generated (optional)")
+    assert report["controlled_variables"]["seeds"] == REQUIRED_SEEDS
+    team = ("workflow", "single", "orchestrator")
+    for shape in team:
+        stats = report["by_shape"][shape]
+        assert stats["error_trials"] == 0
+        assert stats["leak_suspect_trials"] == 0
+    # Group report claims the 3 team shapes agree on every (claim, seed) pair.
+    status = {(t["shape"], t["claim_id"], t["seed"]): t["status"] for t in report["trials"]}
+    pairs = {(c, s) for (_, c, s) in status}
+    for claim_id, seed in pairs:
+        assert len({status[(shape, claim_id, seed)] for shape in team}) == 1
