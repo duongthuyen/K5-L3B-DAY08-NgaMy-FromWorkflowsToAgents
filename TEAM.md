@@ -13,7 +13,7 @@
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 | (điền họ tên) |      |       | `duongthuyen` | TV1: Shape A `workflow` (`src/lab8/shapes/workflow.py`) |
 |   2 | Bùi Thu Phương |      |       | `buiphuong33` | TV2: Shape B `single` (`src/lab8/shapes/single.py`) |
-|   3 | Hoàng Thị Thanh Nga |      |       | `Ngahoang2005` | TV3: Shape C `orchestrator` + handoff/trace (`src/lab8/shapes/orchestrator.py`) |
+|   3 | Hoàng Thị Thanh Nga | 2A202604079 |       | `Ngahoang2005` | TV3: Shape C `orchestrator` + handoff/trace (`src/lab8/shapes/orchestrator.py`) |
 |   4 | Phạm Minh Tâm |      |       | — (chưa vào repo) | TV4: Evaluation, crash suite, ADR, research card, báo cáo; phần việc do `duongthuyen` làm thay |
 
 Phân công chi tiết, file sở hữu và lịch theo checkpoint: [report/team/group_report.md](report/team/group_report.md) mục 2.
