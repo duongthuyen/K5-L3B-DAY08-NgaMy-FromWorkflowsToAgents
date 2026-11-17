@@ -16,14 +16,14 @@ Nhóm hiểu bài toán thế nào, chia việc ra sao, thứ tự làm bốn sh
 
 Nguyên tắc chia: **mỗi người sở hữu riêng một nhóm file**, không ai sửa file của người khác, nên 4 người làm song song từ CP2 mà không đụng merge. Ba shape A/B/C độc lập với nhau (chỉ dùng chung host có sẵn, không ai được sửa host). Mỗi người có ít nhất một commit có nội dung và **một file test riêng** để đáp ứng C8.
 
-> Thành viên lấy theo collaborators của repo nhóm: Dương Thị Huyền (`duongthuyen`, chủ repo), `buiphuong33` (Bùi Thu Phương), `Ngahoang2005`. Thành viên thứ tư **Phạm Minh Tâm** chưa vào repo; phần TV4 do Dương Thị Huyền làm thay, trong `TEAM.md` và báo cáo cá nhân ghi đúng như vậy. Vì Huyền gánh hai phần nên nhận shape đơn giản nhất (workflow). MSSV điền khi chốt `TEAM.md`.
+> Thành viên lấy theo collaborators của repo nhóm: Dương Thị Huyền (`duongthuyen`, chủ repo), `buiphuong33` (Bùi Thu Phương), `Ngahoang2005`, `minhtama11qc-hash` (Phạm Minh Tâm). Thành viên thứ tư **Phạm Minh Tâm** vào repo muộn; các commit phần TV4 trước đó do Dương Thị Huyền làm thay, trong `TEAM.md` và báo cáo cá nhân ghi đúng như vậy. Vì Huyền gánh hai phần nên nhận shape đơn giản nhất (workflow). MSSV điền khi chốt `TEAM.md`.
 
 | Người | Vai | File sở hữu (chỉ người này sửa) | Test riêng | Hạng mục rubric chịu trách nhiệm |
 | --- | --- | --- | --- | --- |
 | TV1 — Dương Thị Huyền (`duongthuyen`) | Shape A `workflow` | `src/lab8/shapes/workflow.py` | `src/tests/test_team_workflow.py` | C1 (A), C3 + C4 trên A |
 | TV2 — Bùi Thu Phương (`buiphuong33`) | Shape B `single` (ReAct) | `src/lab8/shapes/single.py` | `src/tests/test_team_single.py` | C1 (B), C3 + C4 trên B |
 | TV3 — `Ngahoang2005` | Shape C `orchestrator` + handoff/trace | `src/lab8/shapes/orchestrator.py` | `src/tests/test_team_orchestrator.py` | C1 (C), C5 |
-| TV4 — Phạm Minh Tâm (làm thay: Dương Thị Huyền) | Evaluation, durability check, báo cáo | `src/reports/*.json` (chỉ sinh bằng lệnh), `report/team/decision_adr.md`, `report/team/research_card.md`, `report/team/group_report.md` (mục 1, 4, 7, 8), `TEAM.md` (phần thông tin nhóm) | `src/tests/test_team_reports.py` | C2, C6, C7, must-pass trên shape chọn |
+| TV4 — Phạm Minh Tâm (`minhtama11qc-hash`; làm thay: Dương Thị Huyền) | Evaluation, durability check, báo cáo | `src/reports/*.json` (chỉ sinh bằng lệnh), `report/team/decision_adr.md`, `report/team/research_card.md`, `report/team/group_report.md` (mục 1, 4, 7, 8), `TEAM.md` (phần thông tin nhóm) | `src/tests/test_team_reports.py` | C2, C6, C7, must-pass trên shape chọn |
 
 File dùng chung, mỗi người **chỉ sửa phần của mình**: dòng của mình trong bảng đóng góp `TEAM.md`; mục 3 (đoạn về shape mình) và mục 5 của `group_report.md`; báo cáo cá nhân `report/team/MSSV_HoTen.md` (mỗi người một file riêng, copy từ mẫu).
 
@@ -147,7 +147,7 @@ Lỗi gặp phải (kèm lệnh, output hoặc ảnh chụp) và cách nhóm x�
 
 **TV1 / TV4 (Dương Thị Huyền)**
 
-- Repo nhóm trên GitHub chưa ghi thông tin thành viên, và thành viên thứ tư (Phạm Minh Tâm) chưa vào repo. Xử lý: lấy danh sách thành viên từ trang collaborators của repo, chia phần TV4 cho Huyền làm thay và ghi rõ trong `TEAM.md`, báo cáo nhóm, báo cáo cá nhân.
+- Repo nhóm trên GitHub chưa ghi thông tin thành viên, và thành viên thứ tư (Phạm Minh Tâm) chưa vào repo. Xử lý: lấy danh sách thành viên từ trang collaborators của repo, chia phần TV4 cho Huyền làm thay và ghi rõ trong `TEAM.md`, báo cáo nhóm, báo cáo cá nhân. Sau đó Tâm đã vào repo (`minhtama11qc-hash`).
 - Máy dùng Python 3.14, mới hơn khoảng 3.11–3.13 trong hướng dẫn. Đã kiểm: `python -m lab8.smoke` ra `lab8.smoke pass`, cổng host và ma trận student đều xanh, nên giữ nguyên.
 - Benchmark chính thức chỉ chạy được khi đủ 3 shape. Xử lý: chạy thử `workflow,swarm` trước (`reports/ablation_r2.json`) để dựng quy trình, merge nhánh TV2 sau khi chạy test, rồi mới chạy benchmark 4 shape và ghi commit hash vào ADR. Đã chạy lại benchmark, crash và ablation trên máy: kết quả trùng khớp 100% với file đã commit.
 - File `student_drop.zip` giải nén ra thư mục lồng hai lớp (`src/student_drop/student_drop/`), trong khi lệnh tự kiểm cần `src/student_drop/hidden_claims.jsonl`. Xử lý: chuyển 2 file lên đúng `src/student_drop/`. Thư mục này đã nằm trong `.gitignore`, nên không commit dữ liệu hidden.
@@ -165,7 +165,7 @@ Chi tiết đóng góp của từng thành viên nằm trong `TEAM.md` (bảng �
 - **Dương Thị Huyền (TV1, 2A202604077)**:
   - Phần việc: shape A `workflow` (`c59cf58`), đạt 62/62 test student; test riêng `test_team_workflow.py`.
   - Điều phối: chia việc, điền `TEAM.md`, kiểm tra và merge nhánh. Báo cáo: `report/team/2A202604077_DuongThiHuyen.md`.
-- **Phạm Minh Tâm (TV4, phần việc do Dương Thị Huyền làm thay)**:
+- **Phạm Minh Tâm (TV4, `minhtama11qc-hash`; phần việc do Dương Thị Huyền làm thay)**:
   - Đã xong (`5814f68`): crash suite 20/20 (`src/reports/crash.json`); ablation R2 (`src/reports/ablation_r2.json`); research card; test riêng `test_team_reports.py`.
   - CP5: merge nhánh của TV2 (`98ab63a`), benchmark 4 shape (`d2eafae`), ADR chọn `workflow` (`6414cb0`), `check_submission` ra `0 FAIL`.
 

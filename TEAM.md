@@ -14,7 +14,7 @@
 |   1 | Dương Thị Huyền | 2A202604077 |       | `duongthuyen` | TV1: Shape A `workflow` (`src/lab8/shapes/workflow.py`) |
 |   2 | Bùi Thu Phương | 2A202604080 |       | `buiphuong33` | TV2: Shape B `single` (`src/lab8/shapes/single.py`) |
 |   3 | Hoàng Thị Thanh Nga | 2A202604079 |       | `Ngahoang2005` | TV3: Shape C `orchestrator` + handoff/trace (`src/lab8/shapes/orchestrator.py`) |
-|   4 | Phạm Minh Tâm |      |       | — (chưa vào repo) | TV4: Evaluation, crash suite, ADR, research card, báo cáo|
+|   4 | Phạm Minh Tâm |      |       | `minhtama11qc-hash` | TV4: Evaluation, crash suite, ADR, research card, báo cáo|
 
 Phân công chi tiết, file sở hữu và lịch theo checkpoint: [report/team/group_report.md](report/team/group_report.md) mục 2.
 
