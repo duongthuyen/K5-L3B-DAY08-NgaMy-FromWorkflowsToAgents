@@ -144,7 +144,7 @@ Chi tiết đóng góp của từng thành viên nằm trong `TEAM.md` (bảng �
   - Điều phối: chia việc, điền `TEAM.md`, kiểm tra và merge nhánh. Báo cáo: `report/team/2A202604077_DuongThiHuyen.md`.
 - **Phạm Minh Tâm (TV4, phần việc do Dương Thị Huyền làm thay)**:
   - Đã xong (`5814f68`): crash suite 20/20 (`src/reports/crash.json`); ablation R2 (`src/reports/ablation_r2.json`); research card; test riêng `test_team_reports.py`.
-  - Còn lại ở CP5: benchmark 4 shape, ADR, `check_submission`.
+  - CP5: merge nhánh của TV2 (`98ab63a`), benchmark 4 shape (`d2eafae`), ADR chọn `workflow` (`6414cb0`), `check_submission` ra `0 FAIL`.
 
 ## 7. Hạn chế và hướng cải thiện
 

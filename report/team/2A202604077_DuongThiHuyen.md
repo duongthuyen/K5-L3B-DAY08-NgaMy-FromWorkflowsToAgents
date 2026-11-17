@@ -46,6 +46,10 @@ Làm hai phần:
   - Viết test riêng TV4 `src/tests/test_team_reports.py`:
     - `test_workflow_crash_then_resume_pays_once`: crash ở cả 3 điểm (`before_effect`, `after_effect_before_checkpoint`, `after_checkpoint`) bên trong shape, chạy lại vẫn ra 1 refund 35000 và 1 audit.
     - Kiểm định dạng của `crash.json` và `benchmark.json`: đủ seed `11,22,33,44,55`, ≥ 10 claim, `run_id` đúng mẫu.
+- **CP5, phần TV4:**
+  - `98ab63a`: merge `feat/shape-b-single` của TV2, sau khi kiểm cổng host, ma trận student 248/248 và việc nhánh không sửa file thước đo.
+  - `d2eafae`: `src/reports/benchmark.json` (4 shape × 14 claim × 5 seed), chạy lại `crash.json` (20/20).
+  - `6414cb0`: điền `decision_adr.md`, chọn `workflow`, commit chốt `d2eafae`. Điền mục 4 của báo cáo nhóm. `check_submission`: `0 FAIL, 0 WARN`.
 - **Tài liệu nhóm:**
   - `011d8eb`: phân công 4 người trong `group_report.md`.
   - `dc7222d`, `c49fc90`: `TEAM.md` và bảng đóng góp.
@@ -57,7 +61,7 @@ Làm hai phần:
 
 ## 4. Bằng chứng
 
-- Commit: `c59cf58` (shape + test TV1), `5814f68` (crash, ablation, research card, test TV4), `011d8eb`, `dc7222d`, `c49fc90` (tài liệu nhóm).
+- Commit: `c59cf58` (shape + test TV1), `5814f68` (crash, ablation, research card, test TV4), `98ab63a` (merge TV2), `d2eafae` (benchmark), `6414cb0` (ADR), `011d8eb`, `dc7222d`, `c49fc90` (tài liệu nhóm).
 - `python -m pytest -q -m student -o addopts= -k workflow`: 62 passed.
 - `python -m pytest -q -o addopts= tests/test_team_workflow.py tests/test_team_reports.py`: 22 passed, 1 skipped (test `benchmark.json` skip cho đến khi chạy benchmark 4 shape ở CP5).
 - `python -m pytest -q` (cổng host): 132 passed, 1 skipped.
