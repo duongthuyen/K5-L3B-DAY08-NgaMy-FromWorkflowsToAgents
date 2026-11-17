@@ -16,14 +16,14 @@ Nhóm hiểu bài toán thế nào, chia việc ra sao, thứ tự làm bốn sh
 
 Nguyên tắc chia: **mỗi người sở hữu riêng một nhóm file**, không ai sửa file của người khác, nên 4 người làm song song từ CP2 mà không đụng merge. Ba shape A/B/C độc lập với nhau (chỉ dùng chung host có sẵn, không ai được sửa host). Mỗi người có ít nhất một commit có nội dung và **một file test riêng** để đáp ứng C8.
 
-> Thành viên lấy theo collaborators của repo nhóm: `duongthuyen` (chủ repo), `buiphuong33` (Bùi Thu Phương), `Ngahoang2005`. Thành viên thứ tư **Phạm Minh Tâm** chưa vào repo; phần TV4 do `duongthuyen` làm thay, trong `TEAM.md` và báo cáo cá nhân ghi đúng như vậy. Vì `duongthuyen` gánh hai phần nên nhận shape đơn giản nhất (workflow). MSSV điền khi chốt `TEAM.md`.
+> Thành viên lấy theo collaborators của repo nhóm: Dương Thị Huyền (`duongthuyen`, chủ repo), `buiphuong33` (Bùi Thu Phương), `Ngahoang2005`. Thành viên thứ tư **Phạm Minh Tâm** chưa vào repo; phần TV4 do Dương Thị Huyền làm thay, trong `TEAM.md` và báo cáo cá nhân ghi đúng như vậy. Vì Huyền gánh hai phần nên nhận shape đơn giản nhất (workflow). MSSV điền khi chốt `TEAM.md`.
 
 | Người | Vai | File sở hữu (chỉ người này sửa) | Test riêng | Hạng mục rubric chịu trách nhiệm |
 | --- | --- | --- | --- | --- |
-| TV1 — `duongthuyen` | Shape A `workflow` | `src/lab8/shapes/workflow.py` | `src/tests/test_team_workflow.py` | C1 (A), C3 + C4 trên A |
+| TV1 — Dương Thị Huyền (`duongthuyen`) | Shape A `workflow` | `src/lab8/shapes/workflow.py` | `src/tests/test_team_workflow.py` | C1 (A), C3 + C4 trên A |
 | TV2 — Bùi Thu Phương (`buiphuong33`) | Shape B `single` (ReAct) | `src/lab8/shapes/single.py` | `src/tests/test_team_single.py` | C1 (B), C3 + C4 trên B |
 | TV3 — `Ngahoang2005` | Shape C `orchestrator` + handoff/trace | `src/lab8/shapes/orchestrator.py` | `src/tests/test_team_orchestrator.py` | C1 (C), C5 |
-| TV4 — Phạm Minh Tâm (làm thay: `duongthuyen`) | Evaluation, durability check, báo cáo | `src/reports/*.json` (chỉ sinh bằng lệnh), `report/team/decision_adr.md`, `report/team/research_card.md`, `report/team/group_report.md` (mục 1, 4, 7, 8), `TEAM.md` (phần thông tin nhóm) | `src/tests/test_team_reports.py` | C2, C6, C7, must-pass trên shape chọn |
+| TV4 — Phạm Minh Tâm (làm thay: Dương Thị Huyền) | Evaluation, durability check, báo cáo | `src/reports/*.json` (chỉ sinh bằng lệnh), `report/team/decision_adr.md`, `report/team/research_card.md`, `report/team/group_report.md` (mục 1, 4, 7, 8), `TEAM.md` (phần thông tin nhóm) | `src/tests/test_team_reports.py` | C2, C6, C7, must-pass trên shape chọn |
 
 File dùng chung, mỗi người **chỉ sửa phần của mình**: dòng của mình trong bảng đóng góp `TEAM.md`; mục 3 (đoạn về shape mình) và mục 5 của `group_report.md`; báo cáo cá nhân `report/team/MSSV_HoTen.md` (mỗi người một file riêng, copy từ mẫu).
 
@@ -31,7 +31,7 @@ File dùng chung, mỗi người **chỉ sửa phần của mình**: dòng của
 
 ### 2.2 Việc cụ thể từng người
 
-**TV1 — `duongthuyen`: Shape A `workflow`**
+**TV1 — Dương Thị Huyền: Shape A `workflow`**
 
 - CP2: làm 8 bước trong docstring `workflow.py`: đọc claim qua `get_claim_view`; thiếu `order_id` thì trả `needs_info`; không thấy order thì `escalated`; quote bằng `compute_compensation` từ order row (bỏ qua số delay trong ticket); quote 0 thì `denied`; quote > 0 thì `durability.issue_refund` với **quote đầy đủ**; trả qua `common.finish()`; ghi trace ở mọi nhánh return.
 - CP3: truyền `crash_at` vào `issue_refund`, không bắt `InjectedCrash`. Không copy khối `REFERENCE_WEAKNESS` của swarm.
@@ -53,7 +53,7 @@ File dùng chung, mỗi người **chỉ sửa phần của mình**: dòng của
 - Tự kiểm: `-k orchestrator` → 62 passed; `python -m pytest -q tests/test_handoff_secret.py tests/test_trace_contract.py`.
 - Test riêng: handoff không chứa key ngoài allowlist; trace của orchestrator không chứa chuỗi `CANARY_SECRET_`.
 
-**TV4 — Phạm Minh Tâm (`duongthuyen` làm thay): Evaluation, durability, báo cáo**
+**TV4 — Phạm Minh Tâm (Dương Thị Huyền làm thay): Evaluation, durability, báo cáo**
 
 - CP1: tạo repo nhóm đúng tên `K5-L3A-DAY08-TenNhom-FromWorkflowsToAgents` và mời giảng viên vào repo; điền phần thông tin nhóm trong `TEAM.md`; chọn câu R1–R4 và điền SOURCE/CLAIM/BOUNDARY trong `research_card.md` (không cần đợi code).
 - CP2–CP3 (song song với các shape): chạy benchmark/crash trên `swarm` để dựng sẵn quy trình; viết `test_team_reports.py` (ví dụ: kiểm `reports/benchmark.json` có đủ 4 shape và seed `11,22,33,44,55`, `crash.json` có `crash_safety` = `20/20`).
@@ -62,7 +62,7 @@ File dùng chung, mỗi người **chỉ sửa phần của mình**: dòng của
 
 ### 2.3 Lịch làm song song và quy trình git
 
-| Mốc | TV1 `duongthuyen` | TV2 Phương | TV3 `Ngahoang2005` | TV4 Tâm (`duongthuyen` làm thay) |
+| Mốc | TV1 Huyền | TV2 Phương | TV3 `Ngahoang2005` | TV4 Tâm (Huyền làm thay) |
 | --- | --- | --- | --- | --- |
 | CP1 (13:30) | cài môi trường, smoke pass, đọc `business_rules.md`, `contracts.md`, `swarm_reference.py` (cả nhóm) | ← | ← | + tạo repo, `TEAM.md`, research card |
 | CP2 (13:45) | workflow | single | orchestrator | benchmark/crash thử trên swarm, test report |
@@ -79,7 +79,7 @@ File dùng chung, mỗi người **chỉ sửa phần của mình**: dòng của
 
 Mô tả ba shape nhóm viết (workflow, single, orchestrator): mỗi shape đọc gì, quyết định gì, gọi host ra sao. Chỉ rõ ranh giới code / model (tham khảo [docs/architecture.md](../../docs/architecture.md)), cách handoff được sanitize và trace ghi những event nào.
 
-### 3.1 Shape A `workflow` (TV1)
+### 3.1 Shape A `workflow` (TV1 — Dương Thị Huyền)
 
 - **Đọc:** `get_claim_view` (không `SELECT *`), rồi `lookup_order` theo `principal_id` của claim (chỉ trả field allowlist: `order_id`, `status`, `delay_days`, `shipping_fee_vnd`, `paid_vnd`, `damage_verified`, `carrier`).
 - **Quyết định (toàn bộ bằng code):** thiếu `order_id` → `needs_info`; order không thấy hoặc ngoài phạm vi khách → `escalated`; quote bằng `compute_compensation` từ order row và policy hiện hành; quote 0 → `denied` (không gọi host, nên không có audit `policy_denied`); quote > 0 → `durability.issue_refund(conn, claim_id, quote đầy đủ, crash_at=crash_at)`. Host từ chối → `denied`; xung đột số tiền → `failed`; thành công → `resolved`.
@@ -125,6 +125,13 @@ Lỗi gặp phải (kèm lệnh, output hoặc ảnh chụp) và cách nhóm x�
 ## 6. Tổng hợp đóng góp
 
 Chi tiết đóng góp của từng thành viên nằm trong `TEAM.md` (bảng đóng góp) và báo cáo cá nhân `report/team/MSSV_HoTen.md`.
+
+- **Dương Thị Huyền (TV1, 2A202604077)**:
+  - Phần việc: shape A `workflow` (`c59cf58`), đạt 62/62 test student; test riêng `test_team_workflow.py`.
+  - Điều phối: chia việc, điền `TEAM.md`, kiểm tra và merge nhánh. Báo cáo: `report/team/2A202604077_DuongThiHuyen.md`.
+- **Phạm Minh Tâm (TV4, phần việc do Dương Thị Huyền làm thay)**:
+  - Đã xong (`5814f68`): crash suite 20/20 (`src/reports/crash.json`); ablation R2 (`src/reports/ablation_r2.json`); research card; test riêng `test_team_reports.py`.
+  - Còn lại ở CP5: benchmark 4 shape, ADR, `check_submission`.
 
 ## 7. Hạn chế và hướng cải thiện
 

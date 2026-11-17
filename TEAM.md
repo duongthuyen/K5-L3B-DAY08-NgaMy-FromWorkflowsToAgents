@@ -11,10 +11,10 @@
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 | (điền họ tên) |      |       | `duongthuyen` | TV1: Shape A `workflow` (`src/lab8/shapes/workflow.py`) |
+|   1 | Dương Thị Huyền | 2A202604077 |       | `duongthuyen` | TV1: Shape A `workflow` (`src/lab8/shapes/workflow.py`) |
 |   2 | Bùi Thu Phương |      |       | `buiphuong33` | TV2: Shape B `single` (`src/lab8/shapes/single.py`) |
 |   3 | Hoàng Thị Thanh Nga | 2A202604079 |       | `Ngahoang2005` | TV3: Shape C `orchestrator` + handoff/trace (`src/lab8/shapes/orchestrator.py`) |
-|   4 | Phạm Minh Tâm |      |       | — (chưa vào repo) | TV4: Evaluation, crash suite, ADR, research card, báo cáo; phần việc do `duongthuyen` làm thay |
+|   4 | Phạm Minh Tâm |      |       | — (chưa vào repo) | TV4: Evaluation, crash suite, ADR, research card, báo cáo; phần việc do Dương Thị Huyền (`duongthuyen`) làm thay |
 
 Phân công chi tiết, file sở hữu và lịch theo checkpoint: [report/team/group_report.md](report/team/group_report.md) mục 2.
 
@@ -29,10 +29,10 @@ Gợi ý chia vai:
 
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
-| `duongthuyen` | Shape A `workflow` | `c59cf58` feat(workflow): cài shape A workflow | `src/tests/test_team_workflow.py` |
+| Dương Thị Huyền (`duongthuyen`) | Shape A `workflow` | `c59cf58` feat(workflow): cài shape A workflow | `src/tests/test_team_workflow.py` |
 | Bùi Thu Phương (`buiphuong33`) | Shape B `single` | | `src/tests/test_team_single.py` |
 | Hoàng Thị Thanh Nga (`Ngahoang2005`) | Shape C `orchestrator` + handoff/trace | `bc3d56b` feat(orchestrator): shape C với handoff allowlist và trace sạch | `src/tests/test_team_orchestrator.py` |
-| Phạm Minh Tâm (`duongthuyen` làm thay) | Evaluation + báo cáo | `5814f68` chore(eval): crash suite, ablation R2, research card | `src/tests/test_team_reports.py` |
+| Phạm Minh Tâm (Dương Thị Huyền làm thay) | Evaluation + báo cáo | `5814f68` chore(eval): crash suite, ablation R2, research card | `src/tests/test_team_reports.py` |
 
 ## Cá nhân
 
